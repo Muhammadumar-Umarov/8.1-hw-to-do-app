@@ -1,18 +1,29 @@
 import { useState, type FormEvent } from "react"
 
 const Header = () => {
+    type IObject= {
+        id: number,
+        title: string,
+        text: string,
+    }
     const [data, setData] = useState<any>([])
-
     const [title, setTitle] = useState<string>("Title")
     const [text, setText] = useState<string>("Text")
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setData({ title, text });
+        e.preventDefault();
+        const object: IObject = {
+            id: new Date().getTime(),
+            title,
+            text
+        }
+        setData([...data, object]);
+        console.log(object);
         (e.target as HTMLFormElement).reset()
     }
-    const handleDelete = () => {
-        setData({ title: "", text: "" })
+
+    const handleDelete = (id:number) => {
+        setData(data.filter((i:any)=>i.id!== id))
     }
     return (
         <div>
@@ -21,14 +32,13 @@ const Header = () => {
                 <input required onChange={(e) => setText(e.target.value)} type="text" placeholder="text" />
                 <button>Create</button>
             </form>
-            
-            {data && (
-                <>
-                    <h2>{data.title}</h2>
-                    <p>{data.text}</p>
-                </>
-            )}
-            <button onClick={handleDelete}>Delete</button>
+            {data?.map((i: any) => (
+                <div key={i.id}>
+                    <h2>{i.title}</h2>
+                    <p>{i.text}</p>
+                    <button onClick={()=>handleDelete(i.id)}>Delete</button>
+                </div>
+            ))}
         </div>
     )
 }
